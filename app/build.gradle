@@ -48,7 +48,7 @@ task runBenchmark(type: JavaExec) {
     group = "Execution"
     description = "Run the benchmarkParts method"
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'eu.goldenkoopa.aoc.y2021.BenchmarkRunner'
+    mainClass = 'eu.goldenkoopa.aoc.y2025.BenchmarkRunner'
     args '2025', day, runs
 }
 
@@ -57,7 +57,7 @@ task createDay(type: JavaExec) {
     group = "Creation"
     description = "Creates day class from template"
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'eu.goldenkoopa.aoc.y2021.DayAssembler'
+    mainClass = 'eu.goldenkoopa.aoc.y2025.DayAssembler'
     args 2025, day
 }
 
