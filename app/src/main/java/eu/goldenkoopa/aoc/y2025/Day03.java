@@ -1,7 +1,9 @@
 package eu.goldenkoopa.aoc.y2025;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IntSummaryStatistics;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -23,11 +25,9 @@ public class Day03 implements Day {
 
     int sum = 0;
     for (int[] bank : banks) {
-      int[] subArray = Arrays.copyOfRange(bank, 0, bank.length - 1);
-      IntSummaryStatistics stat = Arrays.stream(subArray).summaryStatistics();
-      int index = findElement(bank, stat.getMax());
-      int[] subArray2 = Arrays.copyOfRange(bank, index + 1, bank.length);
-      IntSummaryStatistics stat2 = Arrays.stream(subArray2).summaryStatistics();
+      IntSummaryStatistics stat = getStats(bank, 0, bank.length - 1);
+      int index = findElement(bank, stat.getMax(), 0);
+      IntSummaryStatistics stat2 = getStats(bank, index + 1, bank.length);
 
       sum += 10 * stat.getMax() + stat2.getMax();
     }
@@ -35,16 +35,36 @@ public class Day03 implements Day {
     return "" + sum;
   }
 
-  private int findElement(int[] arr, int t) {
+  private IntSummaryStatistics getStats(int[] arr, int start, int end) {
+    int[] subArray = Arrays.copyOfRange(arr, start, end);
+    return Arrays.stream(subArray).summaryStatistics();
+  }
+
+  private int findElement(int[] arr, int t, int start) {
 
     int len = arr.length;
 
-    return IntStream.range(0, len).filter(i -> t == arr[i]).findFirst().orElse(-1);
+    return IntStream.range(start, len).filter(i -> t == arr[i]).findFirst().orElse(-1);
   }
 
   @Override
   public String part2(String[] input) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'part2'");
+
+    int[][] banks =
+        Arrays.stream(input)
+            .map(s -> s.chars().map(Character::getNumericValue).toArray())
+            .toArray(int[][]::new);
+
+    long sum = 0;
+    for (int[] bank : banks) {
+      int lastIndex = -1;
+      for (int i = 0; i < 12; i++) {
+        IntSummaryStatistics stats = getStats(bank, lastIndex + 1, bank.length - 12 + 1 + i);
+        lastIndex = findElement(bank, stats.getMax(), lastIndex + 1);
+        sum += stats.getMax() * Math.pow(10, 12d - 1 - i);
+      }
+    }
+
+    return "" + sum;
   }
 }
