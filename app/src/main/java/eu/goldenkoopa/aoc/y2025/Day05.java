@@ -2,7 +2,9 @@ package eu.goldenkoopa.aoc.y2025;
 
 import eu.goldenkoopa.aoc.y2025.utils.Range;
 import eu.goldenkoopa.aoc.y2025.utils.StringUtils;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /** --- Day 5: Cafeteria --- </br> https://adventofcode.com/2025/day/5 */
 public class Day05 implements Day {
@@ -10,6 +12,11 @@ public class Day05 implements Day {
   String[] testInput =
       new String[] {
         "3-5", "10-14", "16-20", "12-18", "", "1", "5", "8", "11", "17", "32",
+      };
+
+  String[] testInput2 =
+      new String[] {
+        "3-5", "10-14", "6-9", "28-38", "", "1", "5", "8", "11", "17", "32",
       };
 
   @Override
@@ -35,8 +42,19 @@ public class Day05 implements Day {
 
   @Override
   public String part2(String[] input) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'part2'");
+
+    List<Range> ranges =
+        new ArrayList<>(
+            Arrays.stream(StringUtils.splitByEmptyLines(input)[0]).map(this::parseRange).toList());
+
+    mergeAllRanges(ranges);
+
+    long countValidIds = 0;
+    for (Range range : ranges) {
+      countValidIds += range.count();
+    }
+
+    return "" + countValidIds;
   }
 
   Range parseRange(String string) {
@@ -47,5 +65,25 @@ public class Day05 implements Day {
     long end = Long.parseLong(parts[1]) + 1;
 
     return new Range(start, end);
+  }
+
+  void mergeAllRanges(List<Range> ranges) {
+
+    int index = 0;
+    while (index < ranges.size() - 1) {
+
+      int innerIndex = index + 1;
+      while (innerIndex < ranges.size()) {
+        if (!ranges.get(index).canMerge(ranges.get(innerIndex))) {
+          innerIndex++;
+          continue;
+        }
+        ranges.get(index).merge(ranges.get(innerIndex));
+        ranges.remove(innerIndex);
+        innerIndex = index + 1;
+      }
+
+      index++;
+    }
   }
 }
