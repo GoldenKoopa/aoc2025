@@ -83,6 +83,18 @@ public class ObjectGrid<T> implements Grid<T> {
   }
 
   @Override
+  public Stream<Location> locationsRow(int row) {
+    return Stream.iterate(
+        new Location(row, 0), this::isValid, loc -> new Location(loc.row(), loc.column() + 1));
+  }
+
+  @Override
+  public Stream<Location> locationsColumn(int column) {
+    return Stream.iterate(
+        new Location(0, column), this::isValid, loc -> new Location(loc.row() + 1, loc.column()));
+  }
+
+  @Override
   public T get(Location p) {
     return grid[p.row()][p.column()];
   }
@@ -160,16 +172,6 @@ public class ObjectGrid<T> implements Grid<T> {
   }
 
   @Override
-  public Location findFirst(T e) {
-    return findAll(e).findFirst().orElse(null);
-  }
-
-  @Override
-  public Stream<Location> findAll(T e) {
-    return locations().filter(f -> Objects.equals(get(f), e));
-  }
-
-  @Override
   public String toString() {
     if (grid == null || grid.length == 0) {
       return "";
@@ -211,7 +213,7 @@ public class ObjectGrid<T> implements Grid<T> {
     }
     return sb.toString();
   }
-  
+
   public String toString(Predicate<Location> predicate, Predicate<Location> predicate2) {
     if (grid == null || grid.length == 0) {
       return "";
@@ -235,5 +237,35 @@ public class ObjectGrid<T> implements Grid<T> {
       }
     }
     return sb.toString();
+  }
+
+  @Override
+  public Location findFirst(T e) {
+    return findAll(e).findFirst().orElse(null);
+  }
+
+  @Override
+  public Stream<Location> findAll(T e) {
+    return locations().filter(f -> Objects.equals(get(f), e));
+  }
+
+  @Override
+  public Location findFirstRow(T e, int row) {
+    return findAllRow(e, row).findFirst().orElse(null);
+  }
+
+  @Override
+  public Location findFirstColumn(T e, int column) {
+    return findAllColumn(e, column).findFirst().orElse(null);
+  }
+
+  @Override
+  public Stream<Location> findAllRow(T e, int row) {
+    return locationsRow(row).filter(f -> Objects.equals(get(f), e));
+  }
+
+  @Override
+  public Stream<Location> findAllColumn(T e, int column) {
+    return locationsColumn(column).filter(f -> Objects.equals(get(f), e));
   }
 }

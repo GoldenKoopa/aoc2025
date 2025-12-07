@@ -13,6 +13,10 @@ public interface Grid<E> {
 
   Stream<Location> locations();
 
+  Stream<Location> locationsRow(int row);
+
+  Stream<Location> locationsColumn(int column);
+
   E get(Location p);
 
   /**
@@ -39,7 +43,15 @@ public interface Grid<E> {
 
   Location findFirst(E e);
 
+  Location findFirstRow(E e, int row);
+
+  Location findFirstColumn(E e, int column);
+
   Stream<Location> findAll(E e);
+
+  Stream<Location> findAllRow(E e, int row);
+
+  Stream<Location> findAllColumn(E e, int column);
 
   String toString();
 }
