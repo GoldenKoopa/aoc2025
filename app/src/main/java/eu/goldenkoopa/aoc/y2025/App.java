@@ -42,8 +42,11 @@ public class App {
   }
 
   private static void run(int year, int day) {
-    String[] input = getInput(year, day);
     Day dayInstance = getDayInstance(day);
+    if (dayInstance == null) {
+      System.exit(-1);
+    }
+    String[] input = getInput(year, day);
 
     System.out.println(
         ColorFormat.CYAN + "======== Day " + day + " (" + year + ") ========" + ColorFormat.RESET);
@@ -68,9 +71,80 @@ public class App {
     }
   }
 
+  public static void benchmarkAll(int year, int runs) {
+    double totalPart1Time = 0;
+    double totalPart2Time = 0;
+    int successfulDays = 0;
+
+    System.out.println(
+        ColorFormat.CYAN
+            + "======== Benchmark All Days ("
+            + year
+            + ") ========"
+            + ColorFormat.RESET);
+
+    for (int i = 1; i <= 25; i++) {
+      try {
+        Day dayInstance = getDayInstance(i);
+        if (dayInstance == null) {
+          continue;
+        }
+
+        String[] input = getInput(year, i);
+
+        System.out.println(ColorFormat.CYAN + "Day " + i + ":" + ColorFormat.RESET);
+
+        double part1Time =
+            benchmarkPart(
+                "Part 1", () -> dayInstance.part1(Arrays.copyOf(input, input.length)), runs);
+        double part2Time =
+            benchmarkPart(
+                "Part 2", () -> dayInstance.part2(Arrays.copyOf(input, input.length)), runs);
+
+        totalPart1Time += part1Time;
+        totalPart2Time += part2Time;
+        successfulDays++;
+
+        System.out.println();
+      } catch (Exception e) {
+        System.out.println(
+            ColorFormat.RED + "Day " + i + " skipped: " + e.getMessage() + ColorFormat.RESET);
+      }
+    }
+
+    int maxWidth =
+        Math.max(
+            Math.max("Total Part 1".length(), "Total Part 2".length()),
+            Math.max("Grand Total".length(), "Part 1 Avg/Day".length()));
+    maxWidth = Math.max(maxWidth, "Part 2 Avg/Day".length());
+
+    String fmt = "%-" + maxWidth + "s: %8.3f ms%n";
+
+    System.out.println(
+        ColorFormat.CYAN
+            + "======== Summary ("
+            + successfulDays
+            + "/25 days) ========"
+            + ColorFormat.RESET);
+    System.out.printf(ColorFormat.PURPLE + fmt + ColorFormat.RESET, "Total Part 1", totalPart1Time);
+    System.out.printf(ColorFormat.PURPLE + fmt + ColorFormat.RESET, "Total Part 2", totalPart2Time);
+    System.out.printf(
+        ColorFormat.PURPLE + fmt + ColorFormat.RESET,
+        "Grand Total",
+        totalPart1Time + totalPart2Time);
+    System.out.printf(
+        ColorFormat.PURPLE + fmt + ColorFormat.RESET,
+        "Part 1 Avg/Day",
+        totalPart1Time / successfulDays);
+    System.out.printf(
+        ColorFormat.PURPLE + fmt + ColorFormat.RESET,
+        "Part 2 Avg/Day",
+        totalPart2Time / successfulDays);
+  }
+
   public static void benchmarkParts(int year, int day, int runs) {
-    String[] input = getInput(year, day);
     Day dayInstance = getDayInstance(day);
+    String[] input = getInput(year, day);
 
     System.out.println(
         ColorFormat.CYAN
@@ -86,7 +160,7 @@ public class App {
     benchmarkPart("Part 2", () -> dayInstance.part2(Arrays.copyOf(input, input.length)), runs);
   }
 
-  private static void benchmarkPart(String part, Supplier<String> partFunction, int runs) {
+  private static double benchmarkPart(String part, Supplier<String> partFunction, int runs) {
     System.out.println(
         ColorFormat.YELLOW + "----- Benchmark " + part + " -----" + ColorFormat.RESET);
 
@@ -95,7 +169,7 @@ public class App {
       partFunction.get();
     } catch (Exception e) {
       System.out.println(ColorFormat.RED + "Warmup error: " + e.getMessage() + ColorFormat.RESET);
-      return;
+      return -1;
     }
 
     double total = 0;
@@ -108,7 +182,7 @@ public class App {
         total += elapsed / 1_000_000.0; // ms
       } catch (Exception e) {
         System.out.println(ColorFormat.RED + "Error: " + e.getMessage() + ColorFormat.RESET);
-        return;
+        return -1;
       }
     }
 
@@ -121,6 +195,7 @@ public class App {
             + "%n",
         avg,
         runs);
+    return avg;
   }
 
   private static Day getDayInstance(int day) {
@@ -142,7 +217,6 @@ public class App {
           "Failed to load "
               + dayClassName
               + " class. Did you remember to create it and implement the Day interface?");
-      System.exit(-1);
     }
 
     return null;

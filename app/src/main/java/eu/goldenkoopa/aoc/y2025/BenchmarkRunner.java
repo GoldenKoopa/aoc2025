@@ -7,8 +7,15 @@ public class BenchmarkRunner {
 
   public static void main(String[] args) {
     int year = Integer.parseInt(args[0]);
-    int day = Integer.parseInt(args[1]);
+    String dayString = args[1];
     int runs = Integer.parseInt(args[2]);
+
+    if (dayString.equals("*")) {
+      App.benchmarkAll(year, runs);
+      return;
+    }
+
+    int day = Integer.parseInt(dayString);
 
     if (day == -1) {
       day = ZonedDateTime.now(ZoneId.of("America/New_York")).getDayOfMonth();

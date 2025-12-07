@@ -42,18 +42,18 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 task runBenchmark(type: JavaExec) {
-    def day = project.hasProperty('day') ? project.property('day').toInteger() : -1
+    def day = project.hasProperty('day') ? project.property('day') : '-1'
     def runs = project.hasProperty('runs') ? project.property('runs').toInteger() : 10
 
     group = "Execution"
     description = "Run the benchmarkParts method"
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'eu.goldenkoopa.aoc.y2025.BenchmarkRunner'
-    args '2025', day, runs
+    args '2025', day.toString(), runs
 }
 
 task createDay(type: JavaExec) {
-    def day = project.hasProperty('day') ? project.property('day').toInteger() : -1
+    def day = project.hasProperty('day') ? project.property('day') : '-1'
     group = "Creation"
     description = "Creates day class from template"
     classpath = sourceSets.main.runtimeClasspath
