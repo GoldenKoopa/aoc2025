@@ -159,7 +159,7 @@ public class App {
     }
 
     try {
-      String input = Files.readString(inputPath).trim();
+      String input = Files.readString(inputPath);
       return input.split("\n");
     } catch (IOException e) {
       throw new RuntimeException("input file read failed", e);
