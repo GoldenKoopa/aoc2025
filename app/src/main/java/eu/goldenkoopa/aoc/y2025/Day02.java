@@ -37,7 +37,7 @@ public class Day02 implements Day {
         String firstHalf = number.substring(0, number.length() / 2);
         String secondHalf = number.substring(number.length() / 2);
 
-        if (Integer.parseInt(firstHalf) == Integer.parseInt(secondHalf)) {
+        if (firstHalf.equals(secondHalf)) {
           sum += i;
         }
       }
