@@ -218,6 +218,7 @@ public class App {
       partFunction.get();
     } catch (Exception e) {
       System.out.println(ColorFormat.RED + "Warmup error: " + e.getMessage() + ColorFormat.RESET);
+      e.printStackTrace();
       return -1;
     }
 
