@@ -19,10 +19,11 @@ public class Point3D {
             + Math.pow(Math.abs(this.z - other.z), 2));
   }
 
-  public double getDistanceSquared(Point3D other) {
-    return Math.pow(Math.abs(this.x - other.x), 2)
-        + Math.pow(Math.abs(this.y - other.y), 2)
-        + Math.pow(Math.abs(this.z - other.z), 2);
+  public int getDistanceSquared(Point3D other) {
+    int dx = Math.abs(this.x - other.x);
+    int dy = Math.abs(this.y - other.y);
+    int dz = Math.abs(this.z - other.z);
+    return dx * dx + dy * dy + dz * dz;
   }
 
   @Override

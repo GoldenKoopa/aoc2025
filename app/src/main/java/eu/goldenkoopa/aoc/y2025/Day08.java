@@ -128,7 +128,7 @@ public class Day08 implements Day {
                 })
             .toArray(Point3D[]::new);
 
-    Map<Point3D[], Double> distances = new HashMap<>();
+    Map<Point3D[], Integer> distances = new HashMap<>();
 
     for (int i = 0; i < junctionBoxes.length - 1; i++) {
       for (int j = i + 1; j < junctionBoxes.length; j++) {
