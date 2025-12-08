@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -45,12 +46,13 @@ public class Day08 implements Day {
   @Override
   public String part1(String[] input) {
 
-    List<Point3D[]> sorted = getSorted(input);
+    PriorityQueue<Map.Entry<Point3D[], Integer>> sorted = getSorted(input);
 
     Graph<Point3D> graph = new Graph<>();
 
     for (int i = 0; i < 1000; i++) {
-      graph.addEdge(new Vertex<>(sorted.get(i)[0]), new Vertex<>(sorted.get(i)[1]));
+      Map.Entry<Point3D[], Integer> x = sorted.poll();
+      graph.addEdge(new Vertex<>(x.getKey()[0]), new Vertex<>(x.getKey()[1]));
     }
 
     List<Set<Vertex<Point3D>>> groups = graph.getGroups();
@@ -70,7 +72,7 @@ public class Day08 implements Day {
 
     int lengthGoal = input.length;
 
-    List<Point3D[]> sorted = getSorted(input);
+    PriorityQueue<Map.Entry<Point3D[], Integer>> sorted = getSorted(input);
 
     Map<Point3D, Set<Point3D>> map = new HashMap<>();
 
@@ -80,8 +82,9 @@ public class Day08 implements Day {
     Point3D point2 = null;
     int i = 0;
     while (!(groups.size() == 1 && groups.get(0).size() == lengthGoal) && i < sorted.size()) {
-      point1 = sorted.get(i)[0];
-      point2 = sorted.get(i)[1];
+      Map.Entry<Point3D[], Integer> x = sorted.poll();
+      point1 = x.getKey()[0];
+      point2 = x.getKey()[1];
       i++;
       Set<Point3D> group1 = map.get(point1);
       Set<Point3D> group2 = map.get(point2);
@@ -115,7 +118,7 @@ public class Day08 implements Day {
     return "" + point1.getX() * point2.getX();
   }
 
-  private List<Point3D[]> getSorted(String[] input) {
+  private PriorityQueue<Map.Entry<Point3D[], Integer>> getSorted(String[] input) {
     Point3D[] junctionBoxes =
         Arrays.stream(input)
             .map(
@@ -137,8 +140,10 @@ public class Day08 implements Day {
             junctionBoxes[i].getDistanceSquared(junctionBoxes[j]));
       }
     }
-    List<Point3D[]> sorted = new ArrayList<>(distances.keySet());
-    sorted.sort((a, b) -> distances.get(a) > distances.get(b) ? 1 : -1);
-    return sorted;
+    PriorityQueue<Map.Entry<Point3D[], Integer>> queue =
+        new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+
+    distances.entrySet().forEach(queue::add);
+    return queue;
   }
 }
