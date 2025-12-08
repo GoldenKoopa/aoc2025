@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +78,8 @@ public class App {
     double totalPart2Time = 0;
     int successfulDays = 0;
 
+    Map<Integer, double[]> dayTimes = new HashMap<>();
+
     System.out.println(
         ColorFormat.CYAN
             + "======== Benchmark All Days ("
@@ -104,6 +108,7 @@ public class App {
         totalPart1Time += part1Time;
         totalPart2Time += part2Time;
         successfulDays++;
+        dayTimes.put(i, new double[] {part1Time, part2Time});
 
         System.out.println();
       } catch (Exception e) {
@@ -140,6 +145,50 @@ public class App {
         ColorFormat.PURPLE + fmt + ColorFormat.RESET,
         "Part 2 Avg/Day",
         totalPart2Time / successfulDays);
+
+    System.out.println(
+        "\n" + ColorFormat.CYAN + "======== Matrix Overview ========" + ColorFormat.RESET);
+
+    System.out.printf(
+        ColorFormat.YELLOW + "%-6s %-12s %-12s %-12s%n" + ColorFormat.RESET,
+        "Day",
+        "Part 1 (ms)",
+        "Part 2 (ms)",
+        "Total (ms)");
+    System.out.println(
+        ColorFormat.YELLOW
+            + "------------------------------------------------"
+            + ColorFormat.RESET);
+
+    double maxPart1 = 0, maxPart2 = 0, maxTotal = 0;
+    for (double[] times : dayTimes.values()) {
+      maxPart1 = Math.max(maxPart1, times[0]);
+      maxPart2 = Math.max(maxPart2, times[1]);
+      maxTotal = Math.max(maxTotal, times[0] + times[1]);
+    }
+
+    for (int i = 1; i <= 25; i++) {
+      if (dayTimes.containsKey(i)) {
+        double[] times = dayTimes.get(i);
+        double total = times[0] + times[1];
+
+        System.out.printf(ColorFormat.CYAN + "%-6d" + ColorFormat.RESET, i);
+        System.out.printf("%8.3f ms ", times[0]);
+        System.out.printf("%8.3f ms ", times[1]);
+        System.out.printf(ColorFormat.GREEN + "%8.3f ms%n" + ColorFormat.RESET, total);
+      } else {
+        System.out.printf(
+            ColorFormat.CYAN + "%-6d" + ColorFormat.RED + "%-12s %-12s %-12s%n" + ColorFormat.RESET,
+            i,
+            "---",
+            "---",
+            "---");
+      }
+    }
+    System.out.println(
+        ColorFormat.YELLOW
+            + "------------------------------------------------"
+            + ColorFormat.RESET);
   }
 
   public static void benchmarkParts(int year, int day, int runs) {
